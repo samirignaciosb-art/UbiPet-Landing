@@ -564,26 +564,36 @@
     </p>
   </footer>
 
-  <script type="module">
+  <script>
     // Cargar config desde Supabase
-    try {
-      const SUPABASE_URL = 'https://hwkyvxzbheegxynoljrw.supabase.co'
-      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3a3l2eHpiaGVlZ3h5bm9sanJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNjI5MzUsImV4cCI6MjA1NTkzODkzNX0.GmCHNHqnhFbZ0t3bOEH5bGPn1s89bHVr8E7eBpBh_4g'
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/configuracion?select=clave,valor`, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-      })
-      const data = await res.json()
+    const SUPABASE_URL = 'https://hwkyvxzbheegxynoljrw.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3a3l2eHpiaGVlZ3h5bm9sanJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNjI5MzUsImV4cCI6MjA1NTkzODkzNX0.GmCHNHqnhFbZ0t3bOEH5bGPn1s89bHVr8E7eBpBh_4g'
+
+    fetch(`${SUPABASE_URL}/rest/v1/configuracion?select=clave,valor`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data)) return
       data.forEach(row => {
         if (row.clave === 'instagram') {
           const el = document.getElementById('footer-instagram')
-          if (el) { el.href = row.valor; el.querySelector('span') && (el.querySelector('span').textContent = '@' + row.valor.split('/').pop()) }
+          if (el) {
+            el.href = row.valor
+            const username = row.valor.replace(/\/$/, '').split('/').pop().split('?')[0]
+            el.innerHTML = el.innerHTML.replace('@ubipet.shop', '@' + username)
+          }
         }
         if (row.clave === 'web') {
           const el = document.getElementById('footer-web')
-          if (el) { el.href = row.valor }
+          if (el) el.href = row.valor
         }
       })
-    } catch(e) { console.log('Config load error:', e) }
+    })
+    .catch(e => console.log('Config error:', e))
   </script>
 
   <script>
